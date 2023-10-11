@@ -1,8 +1,5 @@
 provider "aws" {
    region     = "ap-south-1"
-   access_key = "AKIAYK2TEGV6LYSGHBE6"
-   secret_key = "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"
-
 }
 
 resource "aws_instance" "tomcat" {
