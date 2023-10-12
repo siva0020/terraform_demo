@@ -1,16 +1,45 @@
 provider "aws" {
-   region     = "ap-south-1"
+  region = "ap-south-1"  # Set your desired AWS region
 }
 
-resource "aws_instance" "tomcat" {
-  ami           = "ami-0f5ee92e2d63afc18"  # Amazon Linux 2 AMI ID
-  instance_type = "t2.micro"                # Set your desired instance type
+resource "aws_iam_role" "cloudwatch_role" {
+  name = "cloudwatch-role"
 
-  tags = {
-    Name = "tomcat-instance"
-  }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
 
-  key_name      = "sftp"  # Set your key pair name
-       
-  # Add other configuration as needed, such as VPC settings, subnet, etc.
+resource "aws_iam_policy" "cloudwatch_policy" {
+  name        = "cloudwatch-policy"
+  description = "Policy for CloudWatch"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action   = [
+          "cloudwatch:PutMetricData",
+          "cloudwatch:GetMetricStatistics",
+          "cloudwatch:ListMetrics",
+        ],
+        Effect   = "Allow",
+        Resource = "*",
+      },
+    ],
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_attachment" {
+  policy_arn = aws_iam_policy.cloudwatch_policy.arn
+  role       = aws_iam_role.cloudwatch_role.name
 }
