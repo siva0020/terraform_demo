@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_iam_role" "cloudwatch_role" {
-  name = "cloudwatch-role"
+  name = "cloudwatch-role2"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
